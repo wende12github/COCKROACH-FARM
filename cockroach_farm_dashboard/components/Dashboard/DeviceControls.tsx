@@ -1,6 +1,6 @@
 import { Fan, ThermometerSun, Droplet, Wind } from 'lucide-react';
 import { useFirebaseValue } from '@/lib/firebase';
-import { db } from '@/lib/firebase';
+import { database } from '@/lib/firebase';
 import { ref, set } from 'firebase/database';
 import { useState } from 'react';
 
@@ -38,7 +38,7 @@ export default function DeviceControls() {
     setUpdating(fullPath);
 
     try {
-      await set(ref(db, fullPath), !currentValue);
+      await set(ref(database, fullPath), !currentValue);
       console.log(`Toggled ${path} to ${!currentValue}`);
     } catch (error) {
       console.error("Failed to update Firebase:", error);
