@@ -1,4 +1,3 @@
-// components/MonthlySummary.tsx
 import { TrendingUp, TrendingDown, DollarSign, Package } from 'lucide-react';
 
 export default function MonthlySummary() {
@@ -35,7 +34,7 @@ export default function MonthlySummary() {
 
   return (
     <div className="bg-white rounded-xl shadow-lg p-6">
-      <h2 className="text-lg font-semibold text-gray-800 mb-6">Monthly Summary</h2>
+      <h2 className="text-lg font-semibold text-green-600 mb-6">Monthly Summary</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat, index) => (
           <div key={index} className="bg-gray-50 rounded-xl p-5">

@@ -79,7 +79,7 @@ export default function EnvironmentMetrics() {
 
   return (
     <div >
-      <h2 className="text-2xl text-nowrap font-bold text-gray-800">Environment Metrics</h2>
+      <h2 className="text-2xl text-nowrap font-bold text-green-600">Environment Metrics</h2>
       <div className="flex">
 
       {metrics.map((metric) => {
