@@ -88,7 +88,7 @@ export const WasteIntake = () => {
 
   return (
     <div className="bg-white rounded-xl shadow-lg p-6 h-full">
-      <h2 className="text-lg font-semibold text-gray-800 mb-6">Waste Intake Tracking</h2>
+      <h2 className="text-lg font-semibold text-green-600 mb-6">Waste Intake Tracking</h2>
       
       {/* Stats Overview */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
