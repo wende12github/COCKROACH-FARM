@@ -13,10 +13,10 @@ export default function Dashboard() {
     <div className="flex flex-col h-screen">
       <Header />
       <main className="flex-1 p-6 overflow-y-auto">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-1 mb-8">
           <EnvironmentMetrics />
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-1 mb-6">
           <DeviceControls />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">

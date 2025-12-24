@@ -58,7 +58,7 @@ export default function DeviceControls() {
           <div
             key={control.path}
             className={`
-              bg-white rounded-xl shadow-md p-6 flex flex-col items-center justify-center space-y-4
+              bg-white rounded-xl shadow-md p-6 flex flex-col items-center justify-center hover:scale-105
               hover:shadow-xl transition-all duration-300 cursor-pointer
               border-2 ${isOn ? 'border-green-400 bg-green-50' : 'border-gray-200'}
               ${isLoading ? 'opacity-70' : ''}
