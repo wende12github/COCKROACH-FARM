@@ -17,16 +17,16 @@ export default function DeviceControls() {
 
   const controls: Control[] = [
     {
-      icon: <Fan className="w-8 h-8" />, label: 'Fan', path: '/control/fan', color: 'text-blue-600',
+      icon: <Fan className="w-8 h-8" />, label: 'Fan', path: '/manual/fan', color: 'text-blue-600',
+      statusPath: "status/fan"
+    },
+    {
+      icon: <ThermometerSun className="w-8 h-8" />, label: 'Heater', path: '/manual/heater', color: 'text-red-600',
       statusPath: "status/heater"
     },
     {
-      icon: <ThermometerSun className="w-8 h-8" />, label: 'Heater', path: '/control/heater', color: 'text-red-600',
-      statusPath: "status/heater"
-    },
-    {
-      icon: <Droplet className="w-8 h-8" />, label: 'Humidifier', path: '/control/humidifier', color: 'text-cyan-600',
-      statusPath: "status/heater"
+      icon: <Droplet className="w-8 h-8" />, label: 'Humidifier', path: '/manual/humidifier', color: 'text-cyan-600',
+      statusPath: "status/humidifier"
     },
   ];
 

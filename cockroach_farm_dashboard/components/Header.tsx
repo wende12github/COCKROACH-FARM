@@ -83,13 +83,13 @@ export default function Header({ onSearch }: HeaderProps) {
   };
 
   return (
-    <header className="bg-gray-950 border-b border-gray-800 px-6 py-4 sticky top-0 z-50">
+    <header className="bg-white dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800 px-6 py-4 sticky top-0 z-50">
       <div className="flex items-center justify-between">
         {/* LEFT - Title */}
         <div className="flex items-center gap-4">
           <div>
             <h1 className="text-xl font-bold text-green-600">Dashboard</h1>
-            <p className="text-sm text-gray-400 hidden md:block">Real-time monitoring and control</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 hidden md:block">Real-time monitoring and control</p>
           </div>
         </div>
 
@@ -97,13 +97,13 @@ export default function Header({ onSearch }: HeaderProps) {
         <div className="flex items-center gap-4">
           {/* Desktop Search */}
           <div className="relative hidden md:block">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400" size={20} />
             <input
               value={searchText}
               onChange={handleSearch}
               type="text"
               placeholder="Search sensors, logs, chambers..."
-              className="pl-10 pr-4 py-2 w-64 lg:w-80 bg-gray-800 border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="pl-10 pr-4 py-2 w-64 lg:w-80 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-lg text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500"
             />
           </div>
 
@@ -111,9 +111,9 @@ export default function Header({ onSearch }: HeaderProps) {
           <div className="relative">
             <button
               onClick={() => setNotificationDropdown(!notificationDropdown)}
-              className="relative p-2 rounded-lg hover:bg-gray-800 transition-colors"
+              className="relative p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             >
-              <Bell className="h-6 w-6 text-gray-300" />
+              <Bell className="h-6 w-6 text-gray-600 dark:text-gray-300" />
               {unreadCount > 0 && (
                 <span className="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 text-xs bg-red-500 text-white rounded-full">
                   {unreadCount > 9 ? '9+' : unreadCount}
@@ -197,11 +197,11 @@ export default function Header({ onSearch }: HeaderProps) {
               )}
             </div>
             <div className="hidden lg:block text-left">
-              <p className="text-sm font-medium text-gray-300">
+              <p className="text-sm font-medium text-gray-900 dark:text-gray-300">
                 {/* {adminLoading ? 'Loading...' : admin.name} */}
                 {displayName}
               </p>
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-gray-500 dark:text-gray-500">
                 {/* {adminLoading ? '...' : admin.role} */}
                 {role}
               </p>
@@ -213,13 +213,13 @@ export default function Header({ onSearch }: HeaderProps) {
       {/* Mobile Search */}
       <div className="mt-4 md:hidden">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400" size={20} />
           <input
             value={searchText}
             onChange={handleSearch}
             type="text"
             placeholder="Search..."
-            className="w-full pl-10 pr-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="w-full pl-10 pr-4 py-2 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500"
           />
         </div>
       </div>

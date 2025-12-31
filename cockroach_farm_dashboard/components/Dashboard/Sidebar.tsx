@@ -101,16 +101,16 @@ const Sidebar = () => {
   }
 
   return (
-    <aside className="w-64 bg-gray-950 text-white h-screen fixed left-0 top-0 overflow-y-auto z-50 flex flex-col shadow-2xl">
+    <aside className="w-64 bg-white dark:bg-gray-950 text-gray-900 dark:text-white h-screen fixed left-0 top-0 overflow-y-auto z-50 flex flex-col shadow-2xl">
       {/* Header */}
-      <div className="p-6 border-b border-gray-800">
+      <div className="p-6 border-b border-gray-200 dark:border-gray-800">
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
             <span className="text-2xl">🪳</span>
           </div>
           <div>
             <h1 className="text-xl font-bold tracking-tight">Cockroach Farm</h1>
-            <p className="text-gray-400 text-xs">Farm Management System</p>
+            <p className="text-gray-500 dark:text-gray-400 text-xs">Farm Management System</p>
           </div>
         </div>
       </div>
@@ -125,7 +125,7 @@ const Sidebar = () => {
             <div key={sectionKey} className="mb-4">
               <button
                 onClick={() => toggleSection(sectionKey)}
-                className="w-full flex items-center justify-between px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider hover:text-gray-300 transition-colors rounded-lg hover:bg-gray-900/50"
+                className="w-full flex items-center justify-between px-4 py-3 text-xs font-bold text-gray-500 dark:text-gray-500 uppercase tracking-wider hover:text-gray-700 dark:hover:text-gray-300 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-900/50"
               >
                 <span>{section.title}</span>
                 <div className={`transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}>
@@ -145,12 +145,12 @@ const Sidebar = () => {
                           flex items-center gap-4 px-4 py-3 rounded-lg text-sm font-medium
                           transition-all duration-200 group relative
                           ${isActive
-                            ? 'bg-gradient-to-r from-green-900/50 to-transparent text-green-400 border-l-4 border-green-500 shadow-md'
-                            : 'text-gray-400 hover:bg-gray-800/70 hover:text-white'
+                            ? 'bg-gradient-to-r from-green-900/50 to-transparent dark:from-green-900/50 dark:to-transparent text-green-400 border-l-4 border-green-500 shadow-md'
+                            : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800/70 hover:text-gray-900 dark:hover:text-white'
                           }
                         `}
                       >
-                        <div className={isActive ? 'text-green-400' : 'text-gray-500 group-hover:text-gray-300'}>
+                        <div className={isActive ? 'text-green-400' : 'text-gray-500 dark:text-gray-500 group-hover:text-gray-700 dark:group-hover:text-gray-300'}>
                           {item.icon}
                         </div>
                         <span>{item.label}</span>
@@ -168,15 +168,15 @@ const Sidebar = () => {
       </nav>
 
       {/* Footer */}
-      <div className="border-t border-gray-800 p-5">
+      <div className="border-t border-gray-200 dark:border-gray-800 p-5">
         <div className="space-y-5">
           {/* Active Chambers */}
-          <div className="bg-gray-900/70 backdrop-blur rounded-xl p-4 border border-gray-800">
+          <div className="bg-gray-100 dark:bg-gray-900/70 backdrop-blur rounded-xl p-4 border border-gray-200 dark:border-gray-800">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-xs text-gray-400 font-medium">Active Chambers</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Active Chambers</span>
               <span className="text-green-400 text-sm font-bold">{activeChambers}/{totalChambers}</span>
             </div>
-            <div className="w-full h-2 bg-gray-800 rounded-full overflow-hidden">
+            <div className="w-full h-2 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
               <div
                 className="h-full bg-gradient-to-r from-green-500 to-emerald-600 rounded-full transition-all duration-1000"
                 style={{ width: `${chamberPercentage}%` }}
@@ -191,19 +191,19 @@ const Sidebar = () => {
             </div>
             <div className="flex-1">
               <p className="text-sm font-semibold">{displayName}</p>
-              <p className="text-xs text-gray-400">{role}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">{role}</p>
             </div>
           </div>
 
           {/* Action Buttons */}
           <div className="grid grid-cols-2 gap-3">
-            <button className="flex items-center justify-center gap-2 px-4 py-3 bg-gray-800/70 hover:bg-gray-700 rounded-lg text-sm font-medium transition-all hover:shadow-md">
+            <button className="flex items-center justify-center gap-2 px-4 py-3 bg-gray-200 dark:bg-gray-800/70 hover:bg-gray-300 dark:hover:bg-gray-700 rounded-lg text-sm font-medium transition-all hover:shadow-md">
               <HelpCircle className="w-4 h-4" />
               Help
             </button>
             <button
               onClick={handleLogout}
-              className="flex items-center justify-center gap-2 px-4 py-3 bg-red-950/50 hover:bg-red-900/60 text-red-400 rounded-lg text-sm font-medium transition-all hover:shadow-md border border-red-900/30"
+              className="flex items-center justify-center gap-2 px-4 py-3 bg-red-100 dark:bg-red-950/50 hover:bg-red-200 dark:hover:bg-red-900/60 text-red-600 dark:text-red-400 rounded-lg text-sm font-medium transition-all hover:shadow-md border border-red-200 dark:border-red-900/30"
             >
               <LogOut className="w-4 h-4" />
               Logout

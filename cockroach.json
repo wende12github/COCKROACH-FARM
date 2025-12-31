@@ -1,0 +1,265 @@
+{
+  "alerts": {
+    "alert_001": {
+      "message": "Overheating Warning: Chamber 2 temperature reached 32.5°C",
+      "isRead": false,
+      "timestamp": 1703123456789,
+      "severity": "critical",
+      "icon": "thermometer",
+      "chamber": "Chamber 2",
+      "sensor": "temperature",
+      "value": 32.5,
+      "unit": "°C"
+    },
+    "alert_002": {
+      "message": "Low Humidity Alert: Chamber 1 humidity dropped to 45%",
+      "isRead": false,
+      "timestamp": 1703123356789,
+      "severity": "warning",
+      "icon": "droplet",
+      "chamber": "Chamber 1",
+      "sensor": "humidity",
+      "value": 45,
+      "unit": "%"
+    },
+    "alert_003": {
+      "message": "High CO₂ Notification: CO₂ levels exceeded 1200 ppm",
+      "isRead": true,
+      "timestamp": 1703119856789,
+      "severity": "warning",
+      "icon": "cloud",
+      "sensor": "co2",
+      "value": 1200,
+      "unit": "ppm"
+    },
+    "alert_004": {
+      "message": "System maintenance completed successfully",
+      "isRead": true,
+      "timestamp": 1703116256789,
+      "severity": "info",
+      "icon": "bell"
+    },
+    "alert_005": {
+      "message": "Critical: Chamber 3 temperature sensor malfunction",
+      "isRead": false,
+      "timestamp": 1703123556789,
+      "severity": "critical",
+      "icon": "alert-triangle",
+      "chamber": "Chamber 3",
+      "sensor": "temperature"
+    }
+  },
+  "chambers": {
+    "chamber_1": {
+      "name": "Chamber 1",
+      "temperature": 28.5,
+      "humidity": 65,
+      "co2": 850,
+      "ammonia": 12,
+      "status": "normal",
+      "active": true,
+      "lastUpdated": 1703123456789
+    },
+    "chamber_2": {
+      "name": "Chamber 2",
+      "temperature": 32.5,
+      "humidity": 70,
+      "co2": 920,
+      "ammonia": 15,
+      "status": "warning",
+      "active": true,
+      "lastUpdated": 1703123456789
+    },
+    "chamber_3": {
+      "name": "Chamber 3",
+      "temperature": null,
+      "humidity": 68,
+      "co2": 780,
+      "ammonia": 18,
+      "status": "critical",
+      "active": false,
+      "lastUpdated": 1703123556789
+    },
+    "chamber_4": {
+      "name": "Chamber 4",
+      "temperature": 27.2,
+      "humidity": 72,
+      "co2": 890,
+      "ammonia": 10,
+      "status": "normal",
+      "active": true,
+      "lastUpdated": 1703123400000
+    }
+  },
+  "sensor": {
+    "temperature": 28.5,
+    "humidity": 65,
+    "co2": 850,
+    "ammonia": 12,
+    "lastUpdated": 1703123456789
+  },
+  "control": {
+    "fan": true,
+    "heater": false,
+    "humidifier": true,
+    "lastUpdated": 1703123456789
+  },
+  "status": {
+    "heater": false,
+    "fan": true,
+    "humidifier": true,
+    "system": "operational",
+    "lastUpdated": 1703123456789
+  },
+  "settings": {
+    "autoMode": false,
+    "thresholds": {
+      "tempMin": 21,
+      "tempMax": 29,
+      "humidityMin": 60,
+      "humidityMax": 80,
+      "co2Max": 1000,
+      "ammoniaMax": 20
+    },
+    "notifications": {
+      "emailAlerts": true,
+      "smsAlerts": false,
+      "criticalOnly": false
+    },
+    "lastUpdated": 1703123456789
+  },
+  "users": {
+    "abc123XYZrealUIDfromAuth": {
+      "email": "admin@cockroachfarm.com",
+      "displayName": "Admin User",
+      "role": "admin",
+      "permissions": {
+        "read": true,
+        "write": true,
+        "delete": true,
+        "manageUsers": true
+      },
+      "createdAt": 1703000000000,
+      "lastLogin": 1703123456789,
+      "active": true
+    },
+    "def456ABCrealUID2": {
+      "email": "manager@cockroachfarm.com",
+      "displayName": "Farm Manager",
+      "role": "manager",
+      "permissions": {
+        "read": true,
+        "write": true,
+        "delete": false,
+        "manageUsers": false
+      },
+      "createdAt": 1703010000000,
+      "lastLogin": 1703123000000,
+      "active": true
+    },
+    "ghi789DEFrealUID3": {
+      "email": "operator@cockroachfarm.com",
+      "displayName": "System Operator",
+      "role": "operator",
+      "permissions": {
+        "read": true,
+        "write": true,
+        "delete": false,
+        "manageUsers": false
+      },
+      "createdAt": 1703020000000,
+      "lastLogin": 1703122000000,
+      "active": true
+    }
+  },
+  "logs": {
+    "log_001": {
+      "level": "info",
+      "message": "System started successfully",
+      "timestamp": 1703120000000,
+      "source": "system",
+      "user": "system"
+    },
+    "log_002": {
+      "level": "warning",
+      "message": "High temperature detected in Chamber 2",
+      "timestamp": 1703123356789,
+      "source": "sensor_monitor",
+      "chamber": "chamber_2",
+      "user": "system"
+    },
+    "log_003": {
+      "level": "error",
+      "message": "Temperature sensor malfunction in Chamber 3",
+      "timestamp": 1703123556789,
+      "source": "sensor_monitor",
+      "chamber": "chamber_3",
+      "user": "system"
+    },
+    "log_004": {
+      "level": "info",
+      "message": "User admin@cockroachfarm.com logged in",
+      "timestamp": 1703123456789,
+      "source": "auth",
+      "user": "admin@cockroachfarm.com"
+    },
+    "log_005": {
+      "level": "info",
+      "message": "Settings updated by admin@cockroachfarm.com",
+      "timestamp": 1703123400000,
+      "source": "settings",
+      "user": "admin@cockroachfarm.com"
+    }
+  },
+  "reports": {
+    "daily": {
+      "2024-01-20": {
+        "avgTemperature": 28.2,
+        "avgHumidity": 67,
+        "avgCo2": 875,
+        "totalAlerts": 3,
+        "resolvedAlerts": 2,
+        "generatedAt": 1703124000000
+      },
+      "2024-01-19": {
+        "avgTemperature": 27.8,
+        "avgHumidity": 69,
+        "avgCo2": 890,
+        "totalAlerts": 1,
+        "resolvedAlerts": 1,
+        "generatedAt": 1703037600000
+      }
+    },
+    "weekly": {
+      "2024-W03": {
+        "avgTemperature": 28.0,
+        "avgHumidity": 68,
+        "avgCo2": 882,
+        "totalAlerts": 8,
+        "resolvedAlerts": 7,
+        "generatedAt": 1703124000000
+      }
+    },
+    "monthly": {
+      "2024-01": {
+        "avgTemperature": 27.9,
+        "avgHumidity": 67,
+        "avgCo2": 878,
+        "totalAlerts": 25,
+        "resolvedAlerts": 22,
+        "generatedAt": 1703124000000
+      }
+    }
+  },
+  "system": {
+    "status": "operational",
+    "version": "1.2.3",
+    "uptime": 3456789,
+    "lastMaintenance": 1703000000000,
+    "nextMaintenance": 1705600000000,
+    "connectedDevices": 12,
+    "activeSensors": 16,
+    "lastBackup": 1703120000000,
+    "lastUpdated": 1703123456789
+  }
+}

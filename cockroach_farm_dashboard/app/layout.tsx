@@ -7,6 +7,8 @@ import { useAuth } from "@/lib/firebase";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { updateLastLogin } from "@/lib/auth";
+import { ThemeProvider } from "@/components/UI/ThemeProvider";
+import { ThemeToggle } from "@/components/UI/ThemeToggle";
 
 const geistSans = Geist({ subsets: ["latin"], variable: "--font-geist-sans" });
 const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono" });
@@ -41,23 +43,38 @@ export default function RootLayout({
     return (
       <html lang="en">
         <body className={`${geistSans.variable} ${geistMono.variable} font-sans`}>
-          <div className="min-h-screen flex items-center justify-center bg-gray-50">
-            <div className="text-center">
-              <div className="w-12 h-12 border-4 border-green-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
-              <p className="mt-4 text-gray-600">Loading...</p>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+              <div className="text-center">
+                <div className="w-12 h-12 border-4 border-green-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+                <p className="mt-4 text-gray-600 dark:text-gray-400">Loading...</p>
+              </div>
             </div>
-          </div>
+          </ThemeProvider>
         </body>
       </html>
     );
   }
 
-  // If user is on /auth/login or /auth/register → show ONLY the page (no sidebar)
+  // If user is on /auth/login or /auth/register → show ONLY the Login or Register page
   if (!user && pathname.startsWith('/auth')) {
     return (
       <html lang="en">
         <body className={`${geistSans.variable} ${geistMono.variable} font-sans bg-gray-50 dark:bg-gray-900`}>
-          {children}
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+            <ThemeToggle />
+          </ThemeProvider>
         </body>
       </html>
     );
@@ -68,12 +85,20 @@ export default function RootLayout({
     return (
       <html lang="en">
         <body className={`${geistSans.variable} ${geistMono.variable} font-sans bg-gray-50 dark:bg-gray-900`}>
-          <div className="flex min-h-screen">
-            <Sidebar />
-            <main className="flex-1 ml-64 p-8">
-              {children}
-            </main>
-          </div>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <div className="flex min-h-screen">
+              <Sidebar />
+              <main className="flex-1 ml-64 p-8">
+                {children}
+              </main>
+            </div>
+            <ThemeToggle />
+          </ThemeProvider>
         </body>
       </html>
     );
