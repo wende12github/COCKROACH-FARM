@@ -5,10 +5,12 @@ import "./globals.css";
 import Sidebar from "@/components/Dashboard/Sidebar";
 import { useAuth } from "@/lib/firebase";
 import { useRouter, usePathname } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { updateLastLogin } from "@/lib/auth";
 import { ThemeProvider } from "@/components/UI/ThemeProvider";
 import { ThemeToggle } from "@/components/UI/ThemeToggle";
+import { Menu } from "lucide-react";
+import Header from "@/components/Header";
 
 const geistSans = Geist({ subsets: ["latin"], variable: "--font-geist-sans" });
 const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono" });
@@ -21,6 +23,7 @@ export default function RootLayout({
   const { user, loading } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Redirect logic
   useEffect(() => {
@@ -92,11 +95,27 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <div className="flex min-h-screen">
-              <Sidebar />
-              <main className="flex-1 ml-64 p-8">
-                {children}
-              </main>
+              <Sidebar mobileMenuOpen={mobileMenuOpen} setMobileMenuOpen={setMobileMenuOpen} />
+
+              {/* Main content */}
+              <div className="flex-1 flex flex-col">
+                {/* Mobile Header with Menu Button */}
+                <Header onMenuClick={() => setMobileMenuOpen(!mobileMenuOpen)} 
+                  mobileMenuOpen={mobileMenuOpen} />
+
+                <main className="flex-1 lg:ml p-4 lg:p-8 overflow-y-auto">
+                  {children}
+                </main>
+              </div>
             </div>
+
+            {/* Overlay when mobile menu is open */}
+            {mobileMenuOpen && (
+              <div
+                className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+                onClick={() => setMobileMenuOpen(false)}
+              />
+            )}
             <ThemeToggle />
           </ThemeProvider>
         </body>

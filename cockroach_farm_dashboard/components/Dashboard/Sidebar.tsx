@@ -20,8 +20,12 @@ import { useAuth, logout } from '@/lib/firebase'; // ← Import useAuth & logout
 import { useRouter } from 'next/navigation';
 
 type SectionKey = 'monitoring' | 'management' | 'system';
+type SidebarProps = {
+  mobileMenuOpen: boolean;
+  setMobileMenuOpen: (open: boolean) => void;
+};
 
-const Sidebar = () => {
+const Sidebar = ({ mobileMenuOpen, setMobileMenuOpen }: SidebarProps) => {
   const pathname = usePathname();
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
@@ -101,7 +105,25 @@ const Sidebar = () => {
   }
 
   return (
-    <aside className="w-64 bg-white dark:bg-gray-950 text-gray-900 dark:text-white h-screen fixed left-0 top-0 overflow-y-auto z-50 flex flex-col shadow-2xl">
+    <aside className={`
+        fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-gray-950 text-gray-900 dark:text-white
+        flex flex-col shadow-2xl overflow-y-auto
+        transition-transform duration-300 ease-in-out
+        ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
+        lg:translate-x-0 lg:static lg:inset-0 lg:z-auto
+      `}
+      >
+      <div className="p-4 lg:hidden flex justify-end">
+        <button
+          onClick={() => setMobileMenuOpen(false)}
+          className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer" aria-label="Close menu"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
       {/* Header */}
       <div className="p-6 border-b border-gray-200 dark:border-gray-800">
         <div className="flex items-center gap-3">

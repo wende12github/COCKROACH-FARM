@@ -11,7 +11,6 @@ import MonthlySummary from '@/components/Dashboard/MonthlySummary';
 export default function Dashboard() {
   return (
     <div className="flex flex-col h-screen">
-      <Header />
       <main className="flex-1 p-6 overflow-y-auto">
         <div className="grid grid-cols-1 mb-8">
           <EnvironmentMetrics />
