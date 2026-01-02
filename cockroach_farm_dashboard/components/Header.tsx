@@ -1,6 +1,6 @@
 'use client';
 
-import { Bell, User, Search, ChevronRight } from "lucide-react";
+import { Bell, User, Search, ChevronRight, Menu } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth, useFirebaseList, useFirebaseValueEnhanced } from "@/lib/firebase";
@@ -8,6 +8,8 @@ import { useAuth, useFirebaseList, useFirebaseValueEnhanced } from "@/lib/fireba
 // TYPES
 interface HeaderProps {
   onSearch?: (value: string) => void;
+  onMenuClick?: () => void;
+  mobileMenuOpen?: boolean;
 }
 
 interface Admin {
@@ -24,7 +26,7 @@ interface Notification {
   severity: 'critical' | 'warning' | 'info';
 }
 
-export default function Header({ onSearch }: HeaderProps) {
+export default function Header({ onSearch, onMenuClick, mobileMenuOpen = false }: HeaderProps) {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
 
@@ -87,6 +89,34 @@ export default function Header({ onSearch }: HeaderProps) {
       <div className="flex items-center justify-between">
         {/* LEFT - Title */}
         <div className="flex items-center gap-4">
+          <button
+            onClick={onMenuClick}
+            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 lg:hidden transition-all"
+            aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+          >
+            <div className="relative w-6 h-6 cursor-pointer">
+              <Menu 
+                className={`absolute inset-0 transition-all duration-300 ${
+                  mobileMenuOpen 
+                    ? 'rotate-90 scale-0 opacity-0' 
+                    : 'rotate-0 scale-100 opacity-100'
+                }`}
+              />
+              <svg 
+                className={`absolute inset-0 transition-all duration-300 ${
+                  mobileMenuOpen 
+                    ? 'rotate-0 scale-100 opacity-100' 
+                    : '-rotate-90 scale-0 opacity-0'
+                }`}
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+                strokeWidth={2}
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </div>
+          </button>
           <div>
             <h1 className="text-xl font-bold text-green-600">Dashboard</h1>
             <p className="text-sm text-gray-500 dark:text-gray-400 hidden md:block">Real-time monitoring and control</p>
@@ -189,7 +219,7 @@ export default function Header({ onSearch }: HeaderProps) {
 
           {/* Admin Profile */}
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold">
+            <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold cursor-pointer">
               {authLoading ? (
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               ) : (
