@@ -71,7 +71,7 @@ export default function ChambersPage() {
             chambers.map((chamber) => (
               <Link
                 key={chamber.id}
-                href={`/chambers/${chamber.id}`}
+                href={`/`}
                 className="block transform hover:scale-105 transition-all duration-300"
               >
                 <div
