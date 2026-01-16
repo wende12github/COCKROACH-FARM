@@ -79,7 +79,7 @@ const Sidebar = ({ mobileMenuOpen, setMobileMenuOpen }: SidebarProps) => {
     management: {
       title: 'MANAGEMENT',
       items: [
-        { icon: <Database className="w-5 h-5" />, label: 'Population', href: '/population' },
+        { icon: <Database className="w-5 h-5" />, label: 'Environmental Analytics', href: '/population' },
         { icon: <FileText className="w-5 h-5" />, label: 'Reports & Logs', href: '/reports' },
       ],
     },
