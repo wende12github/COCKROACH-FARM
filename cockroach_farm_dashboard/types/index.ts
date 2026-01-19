@@ -4,12 +4,15 @@ export interface SensorData {
   co2: number
   ammonia: number
   timestamp: number
+  updatedAt?: number;
 }
 
 export interface DeviceStatus {
   fan: boolean
   heater: boolean
   humidifier: boolean
+  autoMode?: boolean;
+  lastUpdated?: number;
 }
 
 export interface PopulationData {
