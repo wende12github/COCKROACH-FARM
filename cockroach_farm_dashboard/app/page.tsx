@@ -7,6 +7,8 @@ import { PopulationAnalytics } from '@/components/Dashboard/PopulationAnalytics'
 import { WasteIntake } from '@/components/Dashboard/WasteTracking';
 import Alerts from '@/components/Dashboard/Alerts';
 import MonthlySummary from '@/components/Dashboard/MonthlySummary';
+import { SensorAnalytics } from '@/components/Dashboard/SensorAnalytics';
+import { SensorDataAnalytics } from '@/components/Dashboard/SensorDataAnalytics';
 
 export default function Dashboard() {
   return (
@@ -19,7 +21,8 @@ export default function Dashboard() {
           <DeviceControls />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          <PopulationAnalytics />
+          {/* <SensorAnalytics /> */}
+          <SensorDataAnalytics />
           <WasteIntake />
         </div>
         <div>

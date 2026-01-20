@@ -1,18 +1,19 @@
 import { getAnalytics } from 'firebase/analytics';
 import { initializeApp, getApps, getApp } from 'firebase/app';
-import { 
-  getDatabase, 
-  ref, 
-  onValue, 
-  off, 
-  query, 
-  orderByChild, 
+import {
+  getDatabase,
+  ref,
+  onValue,
+  off,
+  query,
+  orderByChild,
+  orderByKey,
   limitToLast,
   limitToFirst,
   startAt,
   endAt,
   equalTo,
-  Database, 
+  Database,
   DatabaseReference,
   DataSnapshot,
   Query,
@@ -176,7 +177,11 @@ export function useFirebaseList<T = any>(
 
     // Apply query options
     if (options.orderBy) {
-      queryConstraints.push(orderByChild(options.orderBy));
+      if (options.orderBy === '$key') {
+        queryConstraints.push(orderByKey());
+      } else {
+        queryConstraints.push(orderByChild(options.orderBy));
+      }
     }
 
     if (options.equalTo !== undefined) {
@@ -263,7 +268,7 @@ export function useFirebaseList<T = any>(
 export function useFirebasePaginatedList<T = any>(
   path: string,
   pageSize: number = 10,
-  orderBy: string = 'timestamp'
+  orderBy: string = '$timestamp'
 ) {
   const [data, setData] = useState<T[]>([]);
   const [loading, setLoading] = useState(true);
@@ -302,13 +307,22 @@ export function useFirebasePaginatedList<T = any>(
         let keys: string[] = [];
         
         snapshot.forEach((childSnapshot: DataSnapshot) => {
-          const childData = childSnapshot.val();
-          const item = {
-            id: childSnapshot.key,
-            ...childData,
-          } as T;
-          result.push(item);
-          keys.push(childSnapshot.key!);
+          const childValue = childSnapshot.val();
+          const childKey = childSnapshot.key!;
+          let item: any;
+          if (typeof childValue === 'object' && childValue !== null) {
+            item = {
+              id: childKey,
+              ...childValue,
+            };
+          } else {
+            item = {
+              id: childKey,
+              value: childValue,
+              timestamp: parseInt(childKey, 10),
+            };
+          }
+          result.push(item as T);
         });
 
         // Reverse to get chronological order (newest first)
@@ -445,12 +459,22 @@ export function formatFirebaseData<T>(snapshot: DataSnapshot): T[] {
   const result: T[] = [];
   
   snapshot.forEach((childSnapshot: DataSnapshot) => {
-    const childData = childSnapshot.val();
-    const item = {
-      id: childSnapshot.key,
-      ...childData,
-    } as T;
-    result.push(item);
+    const childValue = childSnapshot.val();
+    const childKey = childSnapshot.key!;
+    let childData: any;
+    if (typeof childValue === 'object' && childValue !== null) {
+      childData = {
+        id: childKey,
+        ...childValue,
+      };
+    } else {
+      childData = {
+        id: childKey,
+        value: childValue,
+        timestamp: parseInt(childKey, 10),
+      };
+    }
+    result.push(childData as T);
   });
   
   return result;

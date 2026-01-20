@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState, useMemo } from 'react';
+import { useFirebaseList, useFirebaseValue } from "@/lib/firebase"; // Ensure this points to your hooks file
 import {
   LineChart,
   Line,
@@ -12,7 +13,21 @@ import {
   Legend
 } from 'recharts';
 
+// --- Configuration ---
+// Change these paths if your database uses "sensor/temperature" instead
+const PATHS = {
+  LOG_TEMP: 'logs/temperature',
+  LOG_HUM: 'logs/humidity',
+  CURR_TEMP: 'sensor/temperature',
+  CURR_HUM: 'sensor/humidity'
+};
+
 // --- Types ---
+interface DataPoint {
+  id: string; // The firebase key (timestamp)
+  value: number;
+}
+
 interface ChartData {
   timestamp: number;
   label: string;
@@ -33,123 +48,77 @@ interface Stats {
   humRange: string;
 }
 
-// Ideal ranges for reference
-const TEMP_IDEAL_RANGE = { min: 22, max: 24 };
-const HUM_IDEAL_RANGE = { min: 60, max: 70 };
-
-export const SensorDataAnalytics = () => {
-  const [mockData, setMockData] = useState<ChartData[]>([]);
-  const [stats, setStats] = useState<Stats>({
-    currTemp: 23.5,
-    currHum: 65.0,
-    avgTemp: 23.2,
-    avgHum: 64.8,
-    maxTemp: 24.5,
-    minTemp: 21.5,
-    maxHum: 68.2,
-    minHum: 61.5,
-    tempRange: "21.5°C - 24.5°C",
-    humRange: "61.5% - 68.2%"
+export const SensorAnalytics = () => {
+  // 1. Fetch Real-time Data
+  // We limit to the last 50 points to keep the chart snappy
+  const { data: tempList, loading: tempLoading } = useFirebaseList<DataPoint>(PATHS.LOG_TEMP, {
+    limit: 30,
+    orderBy: "$key"
   });
 
-  const [timeRange, setTimeRange] = useState('1h'); // Default time range
-  const [showIdealRange, setShowIdealRange] = useState(true);
+  const { data: humList, loading: humLoading } = useFirebaseList<DataPoint>(PATHS.LOG_HUM, {
+    limit: 30,
+    orderBy: "$key"
+  });
 
-  // Initialize mock data
-  useEffect(() => {
-    const generateInitialData = () => {
-      const dataPoints = 50;
-      const timeInterval = 60000;
-      const now = Date.now();
-      const initialData: ChartData[] = [];
-      
-      let temperature = 22.5;
-      let humidity = 65.0;
-      
-      for (let i = 0; i < dataPoints; i++) {
-        const timestamp = now - (dataPoints - i - 1) * timeInterval;
-        const date = new Date(timestamp);
-        
-        // Add realistic variation with some patterns
-        const hour = date.getHours();
-        const isDaytime = hour >= 8 && hour <= 18;
-        
-        // More variation during daytime
-        const tempVariation = isDaytime ? 0.8 : 0.5;
-        const humVariation = isDaytime ? 1.2 : 0.8;
-        
-        temperature += (Math.random() - 0.5) * 0.8;
-        humidity += (Math.random() - 0.5) * 1.2;
-        
-        temperature = Math.min(Math.max(temperature, 20.0), 26.0);
-        humidity = Math.min(Math.max(humidity, 55.0), 75.0);
-        
-        initialData.push({
-          timestamp,
-          label: date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
-          temperature: parseFloat(temperature.toFixed(1)),
-          humidity: parseFloat(humidity.toFixed(1))
-        });
-      }
-      
-      setMockData(initialData);
-      calculateStats(initialData);
-    };
+  const [timeRange, setTimeRange] = useState('1h');
 
-    generateInitialData();
-  }, []);
+  // Fetch current sensor values
+  const currTemp = useFirebaseValue<number>(PATHS.CURR_TEMP);
+  const currHum = useFirebaseValue<number>(PATHS.CURR_HUM);
 
-  // Update data periodically (optional - remove if you want completely static data)
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setMockData(prev => {
-        const now = Date.now();
-        const newData = [...prev.slice(1)]; // Remove oldest point
-        
-        // Add new data point with slight variation
-        const lastTemp = prev[prev.length - 1].temperature || 23.0;
-        const lastHum = prev[prev.length - 1].humidity || 65.0;
-        
-        const newTemp = Math.min(Math.max(lastTemp + (Math.random() - 0.5) * 0.5, 20.0), 26.0);
-        const newHum = Math.min(Math.max(lastHum + (Math.random() - 0.5) * 1.0, 55.0), 75.0);
-        
-        newData.push({
-          timestamp: now,
-          label: new Date(now).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
-          temperature: parseFloat(newTemp.toFixed(1)),
-          humidity: parseFloat(newHum.toFixed(1))
-        });
-        
-        calculateStats(newData);
-        return newData;
-      });
-    }, 5000); // Update every 5 seconds
+  // 2. Process & Merge Data
+  // We use useMemo to avoid recalculating on every render, only when data changes
+  const { chartData, stats } = useMemo(() => {
+    if (tempLoading || humLoading) return { chartData: [], stats: null };
 
-    return () => clearInterval(interval);
-  }, []);
+    // Create a Map for humidity for fast lookup
+    const humMap = new Map(humList.map(item => [item.id, item.value]));
 
-  const calculateStats = (data: ChartData[]) => {
-    const validTemps = data.filter(d => d.temperature !== null).map(d => d.temperature as number);
-    const validHums = data.filter(d => d.humidity !== null).map(d => d.humidity as number);
-    
-    const minTemp = validTemps.length > 0 ? Math.min(...validTemps) : 0;
-    const maxTemp = validTemps.length > 0 ? Math.max(...validTemps) : 0;
-    const minHum = validHums.length > 0 ? Math.min(...validHums) : 0;
-    const maxHum = validHums.length > 0 ? Math.max(...validHums) : 0;
-    
-    setStats({
-      currTemp: validTemps.length > 0 ? validTemps[validTemps.length - 1] : 0,
-      currHum: validHums.length > 0 ? validHums[validHums.length - 1] : 0,
+    // Merge streams based on Temperature timestamps
+    const merged = tempList.map(t => {
+      const humValue = humMap.get(t.id);
+      const timestamp = parseInt(t.id); // Assuming key is timestamp
+      const date = new Date(timestamp);
+
+      return {
+        timestamp: timestamp,
+        // Format time as HH:MM:SS
+        label: isNaN(date.getTime()) ? t.id : date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+        temperature: Number(t.value),
+        humidity: humValue !== undefined ? Number(humValue) : null
+      };
+    }).sort((a, b) => a.timestamp - b.timestamp);
+
+    // Calculate Statistics
+    const validTemps = merged.filter(d => d.temperature !== null).map(d => d.temperature as number);
+    const validHums = merged.filter(d => d.humidity !== null).map(d => d.humidity as number);
+
+    const statistics: Stats = {
+      currTemp: currTemp !== null ? currTemp : (validTemps.length > 0 ? validTemps[validTemps.length - 1] : 0),
+      currHum: currHum !== null ? currHum : (validHums.length > 0 ? validHums[validHums.length - 1] : 0),
       avgTemp: validTemps.length > 0 ? validTemps.reduce((a, b) => a + b, 0) / validTemps.length : 0,
       avgHum: validHums.length > 0 ? validHums.reduce((a, b) => a + b, 0) / validHums.length : 0,
-      maxTemp,
-      minTemp,
-      maxHum,
-      minHum,
-      tempRange: `${minTemp.toFixed(1)}°C - ${maxTemp.toFixed(1)}°C`,
-      humRange: `${minHum.toFixed(1)}% - ${maxHum.toFixed(1)}%`
-    });
-  };
+      maxTemp: validTemps.length > 0 ? Math.max(...validTemps) : 0,
+      minTemp: 0,
+      maxHum: 0,
+      minHum: 0,
+      tempRange: "18°C - 33°C",
+      humRange: "50.5% - 80.2%"
+    };
+
+    return { chartData: merged, stats: statistics };
+  }, [tempList, humList, tempLoading, humLoading, currTemp, currHum]);
+
+  // 3. Loading State
+  if (!stats) {
+    return (
+      <div className="w-full h-64 flex flex-col items-center justify-center bg-white rounded-xl shadow-lg border border-gray-100 animate-pulse">
+        <div className="w-8 h-8 border-4 border-green-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+        <p className="text-gray-400 font-medium">Connecting to Sensors...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white rounded-xl shadow-xl border border-gray-100 p-6 h-full transition-all duration-300 hover:shadow-2xl">
@@ -159,7 +128,7 @@ export const SensorDataAnalytics = () => {
         <div>
           <div className="flex items-center gap-2">
             <span className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></span>
-            <h2 className="text-xl font-bold text-gray-800">Live Environmental Sensor Data</h2>
+            <h2 className="text-xl font-bold text-gray-800">Live Environmental Data</h2>
           </div>
           <p className="text-sm text-gray-500 ml-5">Real-time sync from Firebase</p>
         </div>
@@ -180,15 +149,15 @@ export const SensorDataAnalytics = () => {
       {/* Main Chart Area */}
       <div className="h-[350px] w-full mb-8">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={mockData} margin={{ top: 10, right: 20, left: 30, bottom: 0 }}>
+          <LineChart data={chartData} margin={{ top: 10, right: 20, left: 30, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
             <XAxis
               dataKey="label"
               stroke="#9ca3af"
-              fontSize={12}
+              fontSize={11}
               tickLine={false}
               axisLine={false}
-              minTickGap={10}
+              minTickGap={30}
               tickFormatter={(value, index) => {
                 if (timeRange === '24h' && index % 3 !== 0) return '';
                 return value;
@@ -204,7 +173,7 @@ export const SensorDataAnalytics = () => {
             <YAxis
               yAxisId="left"
               stroke="#ef4444"
-              fontSize={12}
+              fontSize={11}
               tickLine={false}
               axisLine={false}
               unit="°C"
@@ -222,7 +191,7 @@ export const SensorDataAnalytics = () => {
               yAxisId="right"
               orientation="right"
               stroke="#10b981"
-              fontSize={12}
+              fontSize={11}
               tickLine={false}
               axisLine={false}
               unit="%"
