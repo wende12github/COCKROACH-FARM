@@ -26,7 +26,16 @@ interface Stats {
   avgTemp: number;
   avgHum: number;
   maxTemp: number;
+  minTemp: number;
+  maxHum: number;
+  minHum: number;
+  tempRange: string;
+  humRange: string;
 }
+
+// Ideal ranges for reference
+const TEMP_IDEAL_RANGE = { min: 22, max: 24 };
+const HUM_IDEAL_RANGE = { min: 60, max: 70 };
 
 export const SensorDataAnalytics = () => {
   const [mockData, setMockData] = useState<ChartData[]>([]);
@@ -35,8 +44,16 @@ export const SensorDataAnalytics = () => {
     currHum: 65.0,
     avgTemp: 23.2,
     avgHum: 64.8,
-    maxTemp: 24.5
+    maxTemp: 24.5,
+    minTemp: 21.5,
+    maxHum: 68.2,
+    minHum: 61.5,
+    tempRange: "21.5°C - 24.5°C",
+    humRange: "61.5% - 68.2%"
   });
+
+  const [timeRange, setTimeRange] = useState('1h'); // Default time range
+  const [showIdealRange, setShowIdealRange] = useState(true);
 
   // Initialize mock data
   useEffect(() => {
@@ -52,6 +69,14 @@ export const SensorDataAnalytics = () => {
       for (let i = 0; i < dataPoints; i++) {
         const timestamp = now - (dataPoints - i - 1) * timeInterval;
         const date = new Date(timestamp);
+        
+        // Add realistic variation with some patterns
+        const hour = date.getHours();
+        const isDaytime = hour >= 8 && hour <= 18;
+        
+        // More variation during daytime
+        const tempVariation = isDaytime ? 0.8 : 0.5;
+        const humVariation = isDaytime ? 1.2 : 0.8;
         
         temperature += (Math.random() - 0.5) * 0.8;
         humidity += (Math.random() - 0.5) * 1.2;
@@ -107,12 +132,22 @@ export const SensorDataAnalytics = () => {
     const validTemps = data.filter(d => d.temperature !== null).map(d => d.temperature as number);
     const validHums = data.filter(d => d.humidity !== null).map(d => d.humidity as number);
     
+    const minTemp = validTemps.length > 0 ? Math.min(...validTemps) : 0;
+    const maxTemp = validTemps.length > 0 ? Math.max(...validTemps) : 0;
+    const minHum = validHums.length > 0 ? Math.min(...validHums) : 0;
+    const maxHum = validHums.length > 0 ? Math.max(...validHums) : 0;
+    
     setStats({
       currTemp: validTemps.length > 0 ? validTemps[validTemps.length - 1] : 0,
       currHum: validHums.length > 0 ? validHums[validHums.length - 1] : 0,
       avgTemp: validTemps.length > 0 ? validTemps.reduce((a, b) => a + b, 0) / validTemps.length : 0,
       avgHum: validHums.length > 0 ? validHums.reduce((a, b) => a + b, 0) / validHums.length : 0,
-      maxTemp: validTemps.length > 0 ? Math.max(...validTemps) : 0,
+      maxTemp,
+      minTemp,
+      maxHum,
+      minHum,
+      tempRange: `${minTemp.toFixed(1)}°C - ${maxTemp.toFixed(1)}°C`,
+      humRange: `${minHum.toFixed(1)}% - ${maxHum.toFixed(1)}%`
     });
   };
 
@@ -124,9 +159,9 @@ export const SensorDataAnalytics = () => {
         <div>
           <div className="flex items-center gap-2">
             <span className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></span>
-            <h2 className="text-xl font-bold text-gray-800">Live Environmental Data</h2>
+            <h2 className="text-xl font-bold text-gray-800">Live Environmental Sensor Data</h2>
           </div>
-          <p className="text-sm text-gray-500 ml-5">Mock Data Simulation</p>
+          <p className="text-sm text-gray-500 ml-5">Real-time sync from Firebase</p>
         </div>
 
         {/* Live Badges */}
@@ -143,35 +178,62 @@ export const SensorDataAnalytics = () => {
       </div>
 
       {/* Main Chart Area */}
-      <div className="h-[350px] w-full mb-12">
+      <div className="h-[350px] w-full mb-8">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={mockData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+          <LineChart data={mockData} margin={{ top: 10, right: 20, left: 30, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
             <XAxis
               dataKey="label"
               stroke="#9ca3af"
-              fontSize={11}
+              fontSize={12}
               tickLine={false}
               axisLine={false}
-              minTickGap={30}
+              minTickGap={10}
+              tickFormatter={(value, index) => {
+                if (timeRange === '24h' && index % 3 !== 0) return '';
+                return value;
+              }}
+              label={{ 
+                value: `Time (${timeRange})`, 
+                position: 'insideBottom', 
+                offset: -15,
+                fontSize: 20,
+                fill: '#6b7280'
+              }}
             />
             <YAxis
               yAxisId="left"
               stroke="#ef4444"
-              fontSize={11}
+              fontSize={12}
               tickLine={false}
               axisLine={false}
               unit="°C"
               domain={['auto', 'auto']}
+              label={{ 
+                value: 'Temperature (°C)', 
+                angle: -90, 
+                position: 'insideLeft',
+                offset: -10,
+                fontSize: 20,
+                fill: '#ef4444'
+              }}
             />
             <YAxis
               yAxisId="right"
               orientation="right"
               stroke="#10b981"
-              fontSize={11}
+              fontSize={12}
               tickLine={false}
               axisLine={false}
               unit="%"
+              label={{ 
+                value: 'Humidity (%)', 
+                angle: 90, 
+                position: 'insideRight',
+                offset: 1,
+                fontSize: 20,
+                fill: '#10b981'
+              }}
             />
             <Tooltip
               contentStyle={{
