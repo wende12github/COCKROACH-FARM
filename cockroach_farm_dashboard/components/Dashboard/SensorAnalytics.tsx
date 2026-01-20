@@ -41,20 +41,27 @@ interface Stats {
   avgTemp: number;
   avgHum: number;
   maxTemp: number;
+  minTemp: number;
+  maxHum: number;
+  minHum: number;
+  tempRange: string;
+  humRange: string;
 }
 
 export const SensorAnalytics = () => {
   // 1. Fetch Real-time Data
   // We limit to the last 50 points to keep the chart snappy
   const { data: tempList, loading: tempLoading } = useFirebaseList<DataPoint>(PATHS.LOG_TEMP, {
-    limit: 50,
+    limit: 30,
     orderBy: "$key"
   });
 
   const { data: humList, loading: humLoading } = useFirebaseList<DataPoint>(PATHS.LOG_HUM, {
-    limit: 50,
+    limit: 30,
     orderBy: "$key"
   });
+
+  const [timeRange, setTimeRange] = useState('1h');
 
   // Fetch current sensor values
   const currTemp = useFirebaseValue<number>(PATHS.CURR_TEMP);
@@ -93,6 +100,11 @@ export const SensorAnalytics = () => {
       avgTemp: validTemps.length > 0 ? validTemps.reduce((a, b) => a + b, 0) / validTemps.length : 0,
       avgHum: validHums.length > 0 ? validHums.reduce((a, b) => a + b, 0) / validHums.length : 0,
       maxTemp: validTemps.length > 0 ? Math.max(...validTemps) : 0,
+      minTemp: 0,
+      maxHum: 0,
+      minHum: 0,
+      tempRange: "18°C - 33°C",
+      humRange: "50.5% - 80.2%"
     };
 
     return { chartData: merged, stats: statistics };
@@ -135,9 +147,9 @@ export const SensorAnalytics = () => {
       </div>
 
       {/* Main Chart Area */}
-      <div className="h-[350px] w-full mb-12">
+      <div className="h-[350px] w-full mb-8">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+          <LineChart data={chartData} margin={{ top: 10, right: 20, left: 30, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
             <XAxis
               dataKey="label"
@@ -146,6 +158,17 @@ export const SensorAnalytics = () => {
               tickLine={false}
               axisLine={false}
               minTickGap={30}
+              tickFormatter={(value, index) => {
+                if (timeRange === '24h' && index % 3 !== 0) return '';
+                return value;
+              }}
+              label={{ 
+                value: `Time (${timeRange})`, 
+                position: 'insideBottom', 
+                offset: -15,
+                fontSize: 20,
+                fill: '#6b7280'
+              }}
             />
             <YAxis
               yAxisId="left"
@@ -155,6 +178,14 @@ export const SensorAnalytics = () => {
               axisLine={false}
               unit="°C"
               domain={['auto', 'auto']}
+              label={{ 
+                value: 'Temperature (°C)', 
+                angle: -90, 
+                position: 'insideLeft',
+                offset: -10,
+                fontSize: 20,
+                fill: '#ef4444'
+              }}
             />
             <YAxis
               yAxisId="right"
@@ -164,6 +195,14 @@ export const SensorAnalytics = () => {
               tickLine={false}
               axisLine={false}
               unit="%"
+              label={{ 
+                value: 'Humidity (%)', 
+                angle: 90, 
+                position: 'insideRight',
+                offset: 1,
+                fontSize: 20,
+                fill: '#10b981'
+              }}
             />
             <Tooltip
               contentStyle={{
@@ -181,18 +220,20 @@ export const SensorAnalytics = () => {
               type="monotone"
               dataKey="temperature"
               name="Temperature"
-              stroke="#ef4444" // RED
+              stroke="#ef4444"
               strokeWidth={2}
               animationDuration={1000}
+              dot={false}
             />
             <Line
               yAxisId="right"
               type="monotone"
               dataKey="humidity"
               name="Humidity"
-              stroke="#10b981" // GREEN
+              stroke="#10b981"
               strokeWidth={2}
               animationDuration={1000}
+              dot={false}
             />
           </LineChart>
         </ResponsiveContainer>
