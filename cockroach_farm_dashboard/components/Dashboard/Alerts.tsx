@@ -1,7 +1,13 @@
 import { AlertTriangle, Thermometer, Droplet, Cloud, Wind, Bell, ChevronRight } from 'lucide-react';
-import { useFirebaseList } from '@/lib/firebase';
+import { useFirebaseValue } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
+
+interface AlertData {
+  active: boolean;
+  message: string;
+  timestamp: number;
+}
 
 interface Alert {
   id: string;
@@ -18,21 +24,49 @@ interface Alert {
 
 export default function Alerts() {
   const router = useRouter();
-  
-  // Fetch alerts from Firebase using useFirebaseList
-  const { data: firebaseAlerts, loading, error } = useFirebaseList<Alert>('alerts', {
-    orderBy: 'timestamp',
-    limit: 3,
-    reverse: true // Show newest first
-  });
+
+  // Fetch current alert status from Firebase using useFirebaseValue
+  const alertData = useFirebaseValue<AlertData>('/alert');
 
   const [alerts, setAlerts] = useState<Alert[]>([]);
 
   useEffect(() => {
-    if (firebaseAlerts && firebaseAlerts.length > 0) {
-      setAlerts(firebaseAlerts);
+    if (alertData && alertData.active) {
+      // Create an alert from the active alert data
+      let icon = 'alert';
+      let severity: 'critical' | 'warning' | 'info' = 'critical';
+      let sensor: string | undefined;
+      let value: number | undefined;
+      let unit: string | undefined;
+
+      const message = alertData.message.toLowerCase();
+      if (message.includes('cold') || message.includes('hot') || message.includes('heat') || message.includes('cool')) {
+        icon = 'thermometer';
+        sensor = 'temperature';
+        unit = '°C';
+      } else if (message.includes('dry') || message.includes('humid')) {
+        icon = 'droplet';
+        sensor = 'humidity';
+        unit = '%';
+      }
+
+      if (message.includes('low') || message.includes('dry') || message.includes('cold')) {
+        severity = 'warning';
+      }
+
+      setAlerts([{
+        id: '1',
+        icon,
+        message: alertData.message,
+        timestamp: alertData.timestamp,
+        severity,
+        isRead: false,
+        sensor,
+        value,
+        unit
+      }]);
     } else {
-      // Default sample alerts if Firebase is empty
+      // Default sample alerts if no active alert
       setAlerts([
         {
           id: '1',
@@ -71,7 +105,7 @@ export default function Alerts() {
         }
       ]);
     }
-  }, [firebaseAlerts]);
+  }, [alertData]);
 
   const getAlertIcon = (iconName: string) => {
     switch (iconName) {
@@ -113,31 +147,7 @@ export default function Alerts() {
     router.push(`/notifications?alert=${alertId}`);
   };
 
-  if (loading) {
-    return (
-      <div className="bg-white p-4 rounded-lg shadow mt-6">
-        <div className="animate-pulse">
-          <div className="h-6 bg-gray-200 rounded w-1/3 mb-4"></div>
-          <div className="space-y-2">
-            <div className="h-16 bg-gray-100 rounded"></div>
-            <div className="h-16 bg-gray-100 rounded"></div>
-            <div className="h-16 bg-gray-100 rounded"></div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="bg-white p-4 rounded-lg shadow mt-6">
-        <h3 className="font-semibold mb-4 flex items-center text-red-600">
-          <AlertTriangle className="mr-2" /> Error Loading Alerts
-        </h3>
-        <p className="text-sm text-gray-600">Failed to load alerts: {error.message}</p>
-      </div>
-    );
-  }
+  // No loading or error states for useFirebaseValue
 
   return (
     <div className="bg-white p-6 rounded-xl shadow-lg mt-6">

@@ -87,6 +87,8 @@ export default function NotificationItem({
             checked={isSelected}
             onChange={() => onToggleSelect(notification.id)}
             className="mt-1"
+            title="Select notification"
+            aria-label="Select notification"
           />
           <div className="flex-shrink-0">
             {getSeverityIcon(notification.severity)}
