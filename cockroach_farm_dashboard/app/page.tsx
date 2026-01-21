@@ -9,6 +9,7 @@ import Alerts from '@/components/Dashboard/Alerts';
 import MonthlySummary from '@/components/Dashboard/MonthlySummary';
 import { SensorAnalytics } from '@/components/Dashboard/SensorAnalytics';
 import { SensorDataAnalytics } from '@/components/Dashboard/SensorDataAnalytics';
+import Footer from '@/components/Dashboard/Footer';
 
 export default function Dashboard() {
   return (
@@ -31,7 +32,12 @@ export default function Dashboard() {
         <div className='m-1'>
           <MonthlySummary />
         </div>
+        <div className='pt-3'>
+
+          <Footer />
+        </div>
       </main>
+      
     </div>
   );
 }
